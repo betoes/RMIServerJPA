@@ -14,5 +14,5 @@ import java.util.List;
  */
 public interface ICliente extends Remote {
     // Inicia en el cliente la descarga paralelamente de las imágenes, las guarden disco duro y notifica el avance (porcentaje) del procesamiento al servidor.
-    public void iniciaProcesamiento();
+    public void iniciaProcesamiento(List<Image> imagenes);
 }

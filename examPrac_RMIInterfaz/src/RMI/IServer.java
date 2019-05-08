@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
  */
 public interface IServer extends Remote{
     //notificar el porcentaje del servidor 
-    public void notificarPorcentaje(int porcentaje, int IdCliente);
+    public void notificarPorcentaje(int porcentaje, int IdCliente) throws RemoteException;
     
     // Inicia el registro del cliente en el Servidor, El servidor devuelve su Id de cliente para su posterior uso.
     public int registraCallBackCliente(ICliente cliente) throws RemoteException;
