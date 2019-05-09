@@ -32,7 +32,7 @@ import javax.swing.WindowConstants;
  */
 public class Server extends UnicastRemoteObject implements IServer {
 
-    public static JFrame frame;
+    public JFrame frame;
 
     private final List<Image> imagenes;
     private List<Image> imagenes2;
@@ -73,30 +73,22 @@ public class Server extends UnicastRemoteObject implements IServer {
         JInternalFrame frameIF = new JInternalFrame();
         frameIF.setLayout(new GridLayout(3, 1));
 
-        cc = new JLabel("Clientes conectados: " + contadorClientes);
+        cc = new JLabel();
         limite = new JLabel();
         JButton botonIniciar = new JButton("Iniciar");
         botonIniciar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (clientes.size() > 0) {
-                    if (clientes.size() == 1) {
-                        try {
-                            notificarPorcentaje(0, 1);
-                        } catch (RemoteException ex) {
-                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        for (int x = 0; x < clientes.size(); x++) {
-                            try {
-                                notificarPorcentaje(0, x);
-                                System.out.println("-------");
-                            } catch (RemoteException ex) {
-                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
+
+                for (int x = 0; x < clientes.size(); x++) {
+                    try {
+                        notificarPorcentaje(0, x);
+                        System.out.println("-------");
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+
             }
         });
 
@@ -125,20 +117,20 @@ public class Server extends UnicastRemoteObject implements IServer {
     }
 
     @Override
-    public void notificarPorcentaje(int porcentaje, int IdCliente) throws RemoteException {
+    public void notificarPorcentaje(int porcentaje, int idCliente) throws RemoteException {
         imagenes2 = new ArrayList<>();
         if (clientes.size() > 1) {
             int ixc = imagenes.size() / clientes.size();
-           
-            for (int i = ((ixc * (IdCliente + 1)) - ixc); i < (ixc * (IdCliente + 1))+1; i++) {
-                if (i < (ixc*(IdCliente+1))) {
+
+            for (int i = ((ixc * (idCliente + 1)) - ixc); i < (ixc * (idCliente + 1)) + 1; i++) {
+                if (i < (ixc * (idCliente + 1))) {
                     System.out.println(i);
                     imagenes2.add(imagenes.get(i));
-                  
+
                 } else {
-                    ICliente cliente = clientes.get(IdCliente);
+                    ICliente cliente = clientes.get(idCliente);
                     cliente.iniciaProcesamiento(imagenes2);
-                   
+
                 }
 
             }
