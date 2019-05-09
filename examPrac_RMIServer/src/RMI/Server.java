@@ -125,6 +125,12 @@ public class Server extends UnicastRemoteObject implements IServer {
     public void desregistraCallBackCliente(ICliente cliente) throws RemoteException {
         if (clientes.contains(cliente)) {
             clientes.remove(cliente);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    cc.setText("Clientes conectados: " + clientes.size());
+                }
+            });
         }
     }
 
