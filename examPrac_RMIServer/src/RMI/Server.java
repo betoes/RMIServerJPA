@@ -22,6 +22,7 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -37,8 +38,11 @@ public class Server extends UnicastRemoteObject implements IServer {
     private final List<ICliente> clientes;
     int contadorClientes;
     JDesktopPane pane;
+    JProgressBar progressBar;
+    private Progress progress;
     private JLabel cc;
     private JLabel limite;
+    private JLabel clienteprog;
 
     public Server() throws RemoteException {
         super();
@@ -64,15 +68,19 @@ public class Server extends UnicastRemoteObject implements IServer {
         frame = new JFrame("Server");
         frame.setSize(500, 300);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
         pane = new JDesktopPane();
         frame.setContentPane(pane);
 
+        progressBar = new JProgressBar(0, 100);
         JInternalFrame frameIF = new JInternalFrame();
         frameIF.setLayout(new GridLayout(3, 1));
 
+        clienteprog = new JLabel();
         cc = new JLabel();
         limite = new JLabel();
+        progressBar.setValue(0);
+        progressBar.setStringPainted(true);
+
         JButton botonIniciar = new JButton("Iniciar");
         botonIniciar.addActionListener(new ActionListener() {
             @Override
@@ -81,7 +89,9 @@ public class Server extends UnicastRemoteObject implements IServer {
                 for (int x = 0; x < clientes.size(); x++) {
                     try {
                         notificarPorcentaje(0, x);
-                       
+                        progress = new Progress(progressBar, clientes.size());
+                        progress.start();
+
                     } catch (RemoteException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -92,7 +102,8 @@ public class Server extends UnicastRemoteObject implements IServer {
 
         frameIF.add(cc);
         frameIF.add(botonIniciar);
-        frameIF.add(limite);
+        frameIF.add(clienteprog);
+        frameIF.add(progressBar);
         frameIF.setSize(400, 100);
         frameIF.setVisible(true);
         pane.add(frameIF);
@@ -127,6 +138,17 @@ public class Server extends UnicastRemoteObject implements IServer {
                 } else {
                     ICliente cliente = clientes.get(idCliente);
                     cliente.iniciaProcesamiento(imagenes2);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                            Thread.sleep(500);
+                            clienteprog.setText("Cliente " + (idCliente+1));
+                            } catch (Exception e) {
+                                System.out.println("Error en" + e.getMessage());
+                            }
+                        }
+                    });;
 
                 }
 
