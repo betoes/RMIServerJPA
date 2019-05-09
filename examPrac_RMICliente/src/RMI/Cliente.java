@@ -18,7 +18,7 @@ import javax.swing.WindowConstants;
  *
  * @author JET
  */
-public class Cliente implements ICliente{
+public class Cliente {
     
     private static final int PORT = 3333;
     private static final String NAMESERVICE = "MiServidor";
@@ -27,6 +27,7 @@ public class Cliente implements ICliente{
     public static JFrame frame;
     public static JDesktopPane desktopPane;
     public static IServer server;
+    public static CallBackCliente callBackCliente;
     
     private void gui() {
         frame = new JFrame("Cliente");
@@ -42,8 +43,11 @@ public class Cliente implements ICliente{
     
     private void javaRMI() throws RemoteException {
         try {
+        callBackCliente = new CallBackCliente();
         Registry registro = LocateRegistry.getRegistry(HOSTNAMESERVER, PORT);
         server = (IServer) registro.lookup(NAMESERVICE);
+        server.registraCallBackCliente(callBackCliente);
+        
         } catch (Exception ex) {
             System.out.println("Error en: " + ex.getMessage());
         }
@@ -67,10 +71,4 @@ public class Cliente implements ICliente{
                 
         });
     }
-    
-    @Override
-    public void iniciaProcesamiento(List<Image> imagenes) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
 }
