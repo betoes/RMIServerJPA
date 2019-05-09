@@ -5,6 +5,8 @@
  */
 package RMI;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
@@ -24,71 +26,71 @@ import javax.swing.WindowConstants;
  * @author JET
  */
 public class Cliente {
-    
+
     private static final int PORT = 3333;
     private static final String NAMESERVICE = "MiServidor";
     private static final String HOSTNAMESERVER = "localhost";
-    
+
     public static JFrame frame;
     public static JDesktopPane desktopPane;
     public static IServer server;
     public static CallBackCliente callBackCliente;
-    
+
     private void javaRMI() throws RemoteException {
         try {
-        callBackCliente = new CallBackCliente();
-        Registry registro = LocateRegistry.getRegistry(HOSTNAMESERVER, PORT);
-        server = (IServer) registro.lookup(NAMESERVICE);
-        server.registraCallBackCliente(callBackCliente);
-        
+            callBackCliente = new CallBackCliente();
+            Registry registro = LocateRegistry.getRegistry(HOSTNAMESERVER, PORT);
+            server = (IServer) registro.lookup(NAMESERVICE);
+            server.registraCallBackCliente(callBackCliente);
+
         } catch (Exception ex) {
             System.out.println("Error en: " + ex.getMessage());
         }
     }
-    
+
     private void gui() {
         frame = new JFrame("Cliente");
-        frame.setSize(500,600);
+        frame.setSize(500, 600);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-       
+
         desktopPane = new JDesktopPane();
-        
+
         frame.setContentPane(desktopPane);
         frame.setVisible(true);
-        
-         frame.addWindowListener(new WindowAdapter() {
+
+        frame.addWindowListener(new WindowAdapter() {
 
             public void windowClosing(WindowEvent e) {
-               int i = JOptionPane.showConfirmDialog(desktopPane, "¿Salir de la aplicación?");
-               if(i == 0) {
-                  try {
-                       server.desregistraCallBackCliente(callBackCliente);
-                  } catch (RemoteException ex) {
-                       Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
-                  }
-               }
+                int i = JOptionPane.showConfirmDialog(desktopPane, "¿Salir de la aplicación?");
+                if (i == 0) {
+                    try {
+                        server.desregistraCallBackCliente(callBackCliente);
+                    } catch (RemoteException ex) {
+                        Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
             }
-            
+
         });
-        
+
     }
-    
+
     public Cliente() throws RemoteException {
         gui();
         javaRMI();
     }
-    
+
     public static void main(String[] args) {
-         SwingUtilities.invokeLater(new Runnable(){
-        
+        SwingUtilities.invokeLater(new Runnable() {
+
             public void run() {
                 try {
-                    new Cliente ();
+                    new Cliente();
                 } catch (RemoteException ex) {
-                    System.out.println("Error en " + ex.getMessage()); 
+                    System.out.println("Error en " + ex.getMessage());
                 }
             }
-                
+
         });
     }
 }

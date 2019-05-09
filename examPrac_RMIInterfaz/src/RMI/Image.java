@@ -5,11 +5,13 @@
  */
 package RMI;
 
+import java.io.Serializable;
+
 /**
  *
  * @author JET
  */
-public class Image {
+public class Image implements Serializable{
      private String name;
     private String url;
     

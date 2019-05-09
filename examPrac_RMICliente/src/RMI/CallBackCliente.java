@@ -18,9 +18,13 @@ public class CallBackCliente extends UnicastRemoteObject implements ICliente {
     public CallBackCliente() throws RemoteException {
         super();
     }
+
     @Override
     public void iniciaProcesamiento(List<Image> imagenes) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int i = 1;
+        for (Image img : imagenes) {
+            new Thread(new FrameImage(img, i++)).start();
+        }
     }
-    
+
 }
