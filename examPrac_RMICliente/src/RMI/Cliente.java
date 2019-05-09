@@ -5,14 +5,12 @@
  */
 package RMI;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JDesktopPane;
@@ -31,10 +29,10 @@ public class Cliente {
     private static final String NAMESERVICE = "MiServidor";
     private static final String HOSTNAMESERVER = "localhost";
 
-    public static JFrame frame;
+    private static JFrame frame;
     public static JDesktopPane desktopPane;
-    public static IServer server;
-    public static CallBackCliente callBackCliente;
+    private static IServer server;
+    private static CallBackCliente callBackCliente;
 
     private void javaRMI() throws RemoteException {
         try {
@@ -44,7 +42,7 @@ public class Cliente {
             server.registraCallBackCliente(callBackCliente);
 
         } catch (Exception ex) {
-            System.out.println("Error en: " + ex.getMessage());
+            System.err.println("Error en: " + ex.getMessage());
         }
     }
 
@@ -59,7 +57,7 @@ public class Cliente {
         frame.setVisible(true);
 
         frame.addWindowListener(new WindowAdapter() {
-
+            @Override
             public void windowClosing(WindowEvent e) {
                 int i = JOptionPane.showConfirmDialog(desktopPane, "¿Salir de la aplicación?");
                 if (i == 0) {
@@ -81,16 +79,12 @@ public class Cliente {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-
-            public void run() {
-                try {
-                    new Cliente();
-                } catch (RemoteException ex) {
-                    System.out.println("Error en " + ex.getMessage());
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                new Cliente();
+            } catch (RemoteException ex) {
+                System.err.println("Error en " + ex.getMessage());
             }
-
         });
     }
 }

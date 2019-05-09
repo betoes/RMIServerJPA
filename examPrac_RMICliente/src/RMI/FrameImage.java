@@ -57,7 +57,7 @@ public class FrameImage extends JInternalFrame implements Runnable {
             
             
         } catch (Exception ex) {
-
+            System.err.print("Error en: " + ex.getMessage());
         }
 
     }
