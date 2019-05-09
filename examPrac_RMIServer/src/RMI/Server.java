@@ -22,7 +22,6 @@ import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -33,12 +32,11 @@ import javax.swing.WindowConstants;
 public class Server extends UnicastRemoteObject implements IServer {
 
     public JFrame frame;
-
     private final List<Image> imagenes;
-    private List<Image> imagenes2;
+    List<Image> imagenes2;
     private final List<ICliente> clientes;
-    private int contadorClientes;
-    private JDesktopPane pane;
+    int contadorClientes;
+    JDesktopPane pane;
     private JLabel cc;
     private JLabel limite;
 
@@ -83,7 +81,7 @@ public class Server extends UnicastRemoteObject implements IServer {
                 for (int x = 0; x < clientes.size(); x++) {
                     try {
                         notificarPorcentaje(0, x);
-                        System.out.println("-------");
+                       
                     } catch (RemoteException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -106,13 +104,13 @@ public class Server extends UnicastRemoteObject implements IServer {
         try {
             String direccion = (InetAddress.getLocalHost()).toString();
             int puerto = 3333;
-            System.out.println("Iniciando servidor en " + direccion + ":" + puerto);
+            System.err.println("Iniciando servidor en " + direccion + ":" + puerto);
 
             Registry registro = LocateRegistry.createRegistry(puerto);
             registro.bind("MiServidor", (IServer) this);
 
         } catch (Exception ex) {
-            System.out.println("Error en" + ex.getMessage());
+            System.err.println("Error en" + ex.getMessage());
         }
     }
 
@@ -124,7 +122,6 @@ public class Server extends UnicastRemoteObject implements IServer {
 
             for (int i = ((ixc * (idCliente + 1)) - ixc); i < (ixc * (idCliente + 1)) + 1; i++) {
                 if (i < (ixc * (idCliente + 1))) {
-                    System.out.println(i);
                     imagenes2.add(imagenes.get(i));
 
                 } else {
@@ -176,14 +173,14 @@ public class Server extends UnicastRemoteObject implements IServer {
         }
     }
 
-    public static void main(String[] args) throws RemoteException {
+    public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
 
             public void run() {
                 try {
                     (new Server()).init();
                 } catch (RemoteException ex) {
-                    System.out.println("Error en " + ex.getMessage());
+                    System.err.println("Error en " + ex.getMessage());
                 }
             }
 
