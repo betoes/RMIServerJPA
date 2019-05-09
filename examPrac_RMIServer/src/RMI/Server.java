@@ -5,6 +5,9 @@
  */
 package RMI;
 
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,6 +15,14 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JButton;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.WindowConstants;
 
 /**
  *
@@ -19,12 +30,21 @@ import java.util.List;
  */
 public class Server extends UnicastRemoteObject implements IServer{
     
+    public static JFrame frame;
+    
     private final List <Image> imagenes;
+    private final List <ICliente>  clientes;
+    private int contadorClientes;
+    private JDesktopPane pane;
+    private JLabel cc;
     
     public Server() throws RemoteException{
         super();
+        gui();
         imagenes = new ArrayList<>();
-        
+        clientes = new ArrayList<>();
+        contadorClientes = clientes.size();
+                
         imagenes.add(new Image("Imagen1", "https://www.dzoom.org.es/wp-content/uploads/2017/07/seebensee-2384369-810x540.jpg"));
         imagenes.add(new Image("Imagen2", "https://www.nationalgeographic.com.es/medio/2018/02/27/playa-de-isuntza-lekeitio__1280x720.jpg"));
         imagenes.add(new Image("Imagen3", "https://ep01.epimg.net/elpais/imagenes/2018/03/01/album/1519910473_492871_1519910821_noticia_normal.jpg"));
@@ -38,6 +58,35 @@ public class Server extends UnicastRemoteObject implements IServer{
         imagenes.add(new Image("Imagen10", "https://mott.pe/noticias/wp-content/uploads/2016/11/Janette-Asche.jpg"));
     }
     
+     private void gui() {
+        frame = new JFrame("Server");
+        frame.setSize(300,300);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        
+        pane = new JDesktopPane();
+        frame.setContentPane(pane);
+        
+        JInternalFrame frameIF = new JInternalFrame();
+        frameIF.setLayout(new GridLayout(3, 1));
+        
+        cc = new JLabel("Clientes conectados: " + contadorClientes);
+        JButton botonIniciar = new JButton("Iniciar");
+          botonIniciar.addActionListener(new ActionListener(){
+           @Override
+           public void actionPerformed(ActionEvent e) {
+             
+           }
+        });
+        
+        frameIF.add(cc);
+        frameIF.add(botonIniciar);
+        frameIF.setSize(200,100);
+        frameIF.setVisible(true);
+        pane.add(frameIF);
+        frame.setVisible(true);
+        
+    }
+     
     public void init() throws RemoteException {
          try {
             String direccion = (InetAddress.getLocalHost()).toString();
@@ -60,15 +109,32 @@ public class Server extends UnicastRemoteObject implements IServer{
 
     @Override
     public int registraCallBackCliente(ICliente cliente) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       contadorClientes = 0;
+       if(!clientes.contains(cliente)) {
+           clientes.add(cliente);
+           contadorClientes++;
+       }
+       return contadorClientes;
     }
 
     @Override
     public void desregistraCallBackCliente(ICliente cliente) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+       if(clientes.contains(cliente)) {
+           clientes.remove(cliente);
+       }
     }
     
     public static void main(String[] args) throws RemoteException{
-        (new Server()).init();
+        SwingUtilities.invokeLater(new Runnable(){
+        
+            public void run() {
+                try {
+                    (new Server()).init();
+                } catch (RemoteException ex) {
+                    System.out.println("Error en " + ex.getMessage()); 
+                }
+            }
+                
+        });
     }
 }
