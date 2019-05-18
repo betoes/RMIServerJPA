@@ -43,6 +43,7 @@ public class Image implements Serializable{
         this.url = url;
     }
     
+    public Image(){}
     
     public Image(String name, String url) {
         this.name = name;
