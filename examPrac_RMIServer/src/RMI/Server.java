@@ -14,6 +14,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +26,9 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 /**
  *
@@ -35,6 +39,7 @@ public class Server extends UnicastRemoteObject implements IServer {
     public JFrame frame;
     private final List<Image> imagenes;
     List<Image> imagenes2;
+    List<Image> imagesEnviar;
     private final List<ICliente> clientes;
     int contadorClientes;
     JDesktopPane pane;
@@ -43,10 +48,14 @@ public class Server extends UnicastRemoteObject implements IServer {
     private JLabel cc;
     private JLabel limite;
     private JLabel clienteprog;
+    EntityManagerFactory emf;
+    EntityManager em;
 
     public Server() throws RemoteException {
         super();
         gui();
+        emf = Persistence.createEntityManagerFactory("examPrac_RMIServerPU");
+        em = emf.createEntityManager();
         imagenes = new ArrayList<>();
         clientes = new ArrayList<>();
         contadorClientes = clientes.size();
@@ -61,6 +70,8 @@ public class Server extends UnicastRemoteObject implements IServer {
         imagenes.add(new Image("Imagen8", "https://i.ytimg.com/vi/hW9PUzl7j9w/maxresdefault.jpg"));
         imagenes.add(new Image("Imagen9", "https://services.meteored.com/img/article/los-paisajes-del-agua---1.jpg"));
         imagenes.add(new Image("Imagen10", "https://mott.pe/noticias/wp-content/uploads/2016/11/Janette-Asche.jpg"));
+        
+        imagesEnviar = imagenes;
 
     }
 
@@ -127,37 +138,35 @@ public class Server extends UnicastRemoteObject implements IServer {
 
     @Override
     public void notificarPorcentaje(int porcentaje, int idCliente) throws RemoteException {
-        imagenes2 = new ArrayList<>();
-        if (clientes.size() > 1) {
-            int ixc = imagenes.size() / clientes.size();
-
-            for (int i = ((ixc * (idCliente + 1)) - ixc); i < (ixc * (idCliente + 1)) + 1; i++) {
-                if (i < (ixc * (idCliente + 1))) {
-                    imagenes2.add(imagenes.get(i));
-
+        List<Image> img = new ArrayList<>();
+        ICliente cliente;
+        int i = 0;
+        
+        Images imgReg;
+        if(!clientes.isEmpty()) {
+            
+            int posCliente = 0;
+            
+            while(!imagesEnviar.isEmpty()){
+                if(posCliente < clientes.size()){
+                    em.getTransaction().begin();
+                    img.add(imagesEnviar.get(0));
+                    imagesEnviar.remove(0);
+                    cliente = clientes.get(posCliente);
+                    cliente.iniciaProcesamiento(img);
+                    img.remove(0);
+                    posCliente++;
+                    
+                    imgReg = new Images(posCliente, img.get(0).getUrl(), new Date(), i++);
+                    
+                    em.getTransaction().commit();
                 } else {
-                    ICliente cliente = clientes.get(idCliente);
-                    cliente.iniciaProcesamiento(imagenes2);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try{
-                            Thread.sleep(500);
-                            clienteprog.setText("Cliente " + (idCliente+1));
-                            } catch (Exception e) {
-                                System.out.println("Error en" + e.getMessage());
-                            }
-                        }
-                    });;
-
+                    posCliente = 0;
                 }
-
-            }
-
-        } else {
-            for (ICliente cliente : clientes) {
-                cliente.iniciaProcesamiento(imagenes);
-            }
+            } 
+            i = 0;
+            em.close();
+            emf.close();
         }
     }
 
