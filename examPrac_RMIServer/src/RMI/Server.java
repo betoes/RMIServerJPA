@@ -54,14 +54,13 @@ public class Server extends UnicastRemoteObject implements IServer {
     public Server() throws RemoteException {
         super();
         gui();
-        emf = Persistence.createEntityManagerFactory("examPrac_RMIServerPU");
+        emf = Persistence.createEntityManagerFactory("examPrac_RMIInterfazPU");
         em = emf.createEntityManager();
         imagenes = new ArrayList<>();
         clientes = new ArrayList<>();
         contadorClientes = clientes.size();
         
         Image img = new Image();
-        
         img = em.find(Image.class, 1);
         imagenes.add(img);
         img = em.find(Image.class, 2);
@@ -152,9 +151,9 @@ public class Server extends UnicastRemoteObject implements IServer {
     public void notificarPorcentaje(int porcentaje, int idCliente) throws RemoteException {
         List<Image> img = new ArrayList<>();
         ICliente cliente;
-        int i = 0;
+        int i = 1;
         
-        Images imgReg;
+        Image imgReg;
         if(!clientes.isEmpty()) {
             
             int posCliente = 0;
@@ -169,7 +168,7 @@ public class Server extends UnicastRemoteObject implements IServer {
                     img.remove(0);
                     posCliente++;
                     
-                    imgReg = em.find(Images.class, i++);
+                    imgReg = em.find(Image.class, i++);
                     imgReg.setFecha(new Date());
                     imgReg.setIdcliente(posCliente);
                     em.getTransaction().commit();

@@ -6,47 +6,115 @@
 package RMI;
 
 import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
- * @author JET
+ * @author Beto Lafarc
  */
-public class Image implements Serializable{
-     private String name;
+@Entity
+@Table(name = "IMAGE")
+@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Image.findAll", query = "SELECT i FROM Image i")
+    , @NamedQuery(name = "Image.findByIdimagen", query = "SELECT i FROM Image i WHERE i.idimagen = :idimagen")
+    , @NamedQuery(name = "Image.findByFecha", query = "SELECT i FROM Image i WHERE i.fecha = :fecha")
+    , @NamedQuery(name = "Image.findByIdcliente", query = "SELECT i FROM Image i WHERE i.idcliente = :idcliente")})
+public class Image implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "IDIMAGEN")
+    private Integer idimagen;
+    @Basic(optional = false)
+    @Lob
+    @Column(name = "URL")
     private String url;
-    
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
+    @Column(name = "FECHA")
+    @Temporal(TemporalType.DATE)
+    private Date fecha;
+    @Column(name = "IDCLIENTE")
+    private Integer idcliente;
+
+    public Image() {
     }
 
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public Image(Integer idimagen) {
+        this.idimagen = idimagen;
     }
 
-    /**
-     * @return the url
-     */
+    public Image(Integer idimagen, String url) {
+        this.idimagen = idimagen;
+        this.url = url;
+    }
+
+    public Integer getIdimagen() {
+        return idimagen;
+    }
+
+    public void setIdimagen(Integer idimagen) {
+        this.idimagen = idimagen;
+    }
+
     public String getUrl() {
         return url;
     }
 
-    /**
-     * @param url the url to set
-     */
     public void setUrl(String url) {
         this.url = url;
     }
-    
-    public Image(){}
-    
-    public Image(String name, String url) {
-        this.name = name;
-        this.url = url;
+
+    public Date getFecha() {
+        return fecha;
     }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public Integer getIdcliente() {
+        return idcliente;
+    }
+
+    public void setIdcliente(Integer idcliente) {
+        this.idcliente = idcliente;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        hash += (idimagen != null ? idimagen.hashCode() : 0);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
+        if (!(object instanceof Image)) {
+            return false;
+        }
+        Image other = (Image) object;
+        if ((this.idimagen == null && other.idimagen != null) || (this.idimagen != null && !this.idimagen.equals(other.idimagen))) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "RMI.Image[ idimagen=" + idimagen + " ]";
+    }
+    
 }

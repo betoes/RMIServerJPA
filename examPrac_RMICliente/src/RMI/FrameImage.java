@@ -34,7 +34,7 @@ public class FrameImage extends JInternalFrame implements Runnable {
             URL url = new URL(image.getUrl());
             awtImage = ImageIO.read(url);
             
-            JLabel nombreLabel = new JLabel(image.getName());
+            JLabel nombreLabel = new JLabel(String.valueOf(image.getIdimagen()));
             this.add(nombreLabel, BorderLayout.NORTH);
             
             ImageIcon imageIcon = new ImageIcon(awtImage);
@@ -45,7 +45,7 @@ public class FrameImage extends JInternalFrame implements Runnable {
                     imageIcon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
             bufferedImage.getGraphics().drawImage(awtImage, 0, 0, null);
             
-            ImageIO.write(bufferedImage, "jpg", new File( image.getName() + ".jpg"));
+            ImageIO.write(bufferedImage, "jpg", new File( image.getIdimagen() + ".jpg"));
             
             
             this.add(picLabel);
