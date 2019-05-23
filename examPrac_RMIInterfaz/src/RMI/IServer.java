@@ -21,4 +21,6 @@ public interface IServer extends Remote{
     
     // Quita el registro del cliente en el Servidor
     public void desregistraCallBackCliente(ICliente cliente) throws RemoteException;
+    
+    public void eliminarRegistro() throws RemoteException;
 }

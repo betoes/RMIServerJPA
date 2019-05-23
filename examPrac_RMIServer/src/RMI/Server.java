@@ -126,7 +126,11 @@ public class Server extends UnicastRemoteObject implements IServer {
         botonEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                try {
+                    eliminarRegistro();
+                } catch (RemoteException ex) {
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         });
 
@@ -186,8 +190,6 @@ public class Server extends UnicastRemoteObject implements IServer {
                 }
             } 
             i = 0;
-            em.close();
-            emf.close();
         }
     }
 
@@ -237,5 +239,23 @@ public class Server extends UnicastRemoteObject implements IServer {
             }
 
         });
+    }
+
+    @Override
+    public void eliminarRegistro() throws RemoteException {
+        List<Image> imagenesBorrar = imagenes;
+        Image img;
+        int i = 1;
+        if(!clientes.isEmpty()) {            
+            while(!imagenesBorrar.isEmpty()){
+                    em.getTransaction().begin();
+                    imagenesBorrar.remove(0);                    
+                    img = em.find(Image.class, i++);
+                    img.setFecha(null);
+                    img.setIdcliente(null);
+                    em.getTransaction().commit();
+            } 
+            i = 1;
+        }
     }
 }
