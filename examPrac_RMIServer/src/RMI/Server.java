@@ -121,11 +121,20 @@ public class Server extends UnicastRemoteObject implements IServer {
 
             }
         });
+        
+        JButton botonEliminar = new JButton("Eliminar");
+        botonEliminar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
 
         frameIF.add(cc);
         frameIF.add(botonIniciar);
         frameIF.add(clienteprog);
         frameIF.add(progressBar);
+        frameIF.add(botonEliminar);
         frameIF.setSize(400, 100);
         frameIF.setVisible(true);
         pane.add(frameIF);
